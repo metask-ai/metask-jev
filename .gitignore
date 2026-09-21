@@ -1,0 +1,12 @@
+# 权重与大数据产物不入 git
+merged/
+*.safetensors
+*.bin
+work/
+# 内部目录走独立 private repo
+internal/
+deploy/
+# 缓存
+__pycache__/
+*.pyc
+.DS_Store
