@@ -12,7 +12,7 @@ cd "$(dirname "$0")"
 source deploy/hosts.sh
 
 ADDR=${HOSTS[kunshan]}
-ROOT=${REMOTE_ROOT[kunshan]}
+ROOT="/home/shuzuan/jevbench"  # jevbench harness 位置 (与 nimble-small 分离)
 TIER="${1:-all}"
 FRESH="${2:-}"
 BENCH_USER=shuzuan
@@ -68,7 +68,7 @@ PYEOF"
 
 # ---------- [3/6] 权重路径 + 旧结果清理 ----------
 echo "── [3/6] 权重路径与结果目录 ──"
-ssh "$ADDR" "export METASK_JEV_MODEL_PATH=$ROOT/runs/train/p4b-policy-mix/merged; \
+ssh "$ADDR" "export METASK_JEV_MODEL_PATH=/home/shuzuan/nimble-small/runs/train/p4b-policy-mix/merged; \
   test -f \$METASK_JEV_MODEL_PATH/model.safetensors && echo '    weights OK' || { echo '    ✗ weights missing'; exit 1; }; \
   mkdir -p $RAW_REMOTE $RESULTS_REMOTE"
 if [ "$FRESH" = "--fresh" ]; then
@@ -82,7 +82,7 @@ for T in $TIERS; do
   N=${TIER_N[$T]}
   echo "    ▶ $T ($N items)..."
   ssh "$ADDR" "cd $ROOT/jevbench && source ~/miniconda3/etc/profile.d/conda.sh && conda activate nimble && \
-    export METASK_JEV_MODEL_PATH=$ROOT/runs/train/p4b-policy-mix/merged && \
+    export METASK_JEV_MODEL_PATH=/home/shuzuan/nimble-small/runs/train/p4b-policy-mix/merged && \
     python -m jevbench.cli run \
       --tasks datasets/public/$F.jsonl \
       --adapter metask_jev \
