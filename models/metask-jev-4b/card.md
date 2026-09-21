@@ -44,13 +44,18 @@ The hard tier contains long policy documents: at the 9B pipeline's 2048-token li
 
 Native context is 262,144 tokens (`max_position_embeddings`); 4096 is the validated evaluation point, not an architectural limit.
 
-## One-command install & run
+## One-command install, then benchmark yourself
 
 ```bash
+# install: venv + deps + weights + tokenizer-contract self-test
 curl -fsSL https://raw.githubusercontent.com/metask-ai/metask-jev/main/install.sh | bash
+
+# reproduce the JevBench numbers above on your machine (easy 48 → judge 72 → hard 111,
+# ~30 min on MPS, resumable; task files fetched automatically)
+curl -fsSL https://raw.githubusercontent.com/metask-ai/metask-jev/main/selftest.sh | bash
 ```
 
-The script: creates a venv, installs pinned dependencies, downloads this model, verifies the A–Z single-token contract, and runs a self-test scoring example. Requires an NVIDIA GPU (≥12 GB) or Apple Silicon.
+Results land in `~/metask-jev/bench_results/` as per-item JSONL (prediction, probabilities, latency) with a summary table at the end. Requires an NVIDIA GPU (≥12 GB) or Apple Silicon.
 
 ## Quickstart
 
@@ -75,8 +80,9 @@ schema = {"decision": {
 
 # candidate-logit readout: one forward pass, softmax over the A/B answer tokens.
 # The prompt format (system + user JSON with per-option descriptions) is the
-# contract the model was trained on — build it exactly as shown in
-# jev_schema.py (vendored in the GitHub repo, links below).
+# contract the model was trained on. build_prompt comes from jev_schema.py in
+# the GitHub repo (metask-ai/metask-jev, inference/ directory) — or use the
+# helper library below, which handles the prompt contract for you.
 prepared = build_prompt(tok, state, schema, max_input_tokens=4096)
 with torch.no_grad():
     out = model(**prepared, use_cache=False, logits_to_keep=1)
@@ -87,8 +93,15 @@ print(dict(zip(["false", "true"], probs.tolist())))
 
 ### Helper library (handles the prompt contract + per-kind temperature for you)
 
+Get the two dependency-free files:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/metask-ai/metask-jev/main/inference/jev_scorer.py -o jev_scorer.py
+curl -fsSL https://raw.githubusercontent.com/metask-ai/metask-jev/main/inference/jev_schema.py -o jev_schema.py
+```
+
 ```python
-from jev_scorer import load_model, score   # pip-free: 2 files from the GitHub repo
+from jev_scorer import load_model, score
 
 model, tok, dev = load_model("wayfind/metask-jev-4b-policy-mix")
 r = score(model, tok, state, schema, temperature=2.25)   # noul temperature
@@ -260,7 +273,8 @@ curl -fsSL https://raw.githubusercontent.com/metask-ai/metask-jev/main/selftest.
 git clone https://github.com/metask-ai/metask-jev-lab && cd metask-jev-lab/jevbench-fork
 pip install -e .
 export METASK_JEV_MODEL_PATH=$(cat ~/metask-jev/model_path.txt)          # weights from install.sh
-export METASK_JEV_NIMBLE_PACKAGE=$(python -c "import jev_schema, os; print(os.path.dirname(os.path.abspath(jev_schema.__file__)))" 2>/dev/null || echo "$HOME/metask-jev")  # vendored prompt builder
+# the vendored nimble package ships inside this fork (jevbench/vendors/metask_jev/) — no env needed
+# (set METASK_JEV_NIMBLE_PACKAGE only to override with a full nimble checkout)
 
 for tier in easy original hard; do
   python -m jevbench.cli run --tasks datasets/public/$tier.jsonl \
