@@ -42,6 +42,43 @@ Would rank **#5** — ahead of GPT-5.6 Luna and DeepSeek V4.1 Flash, behind djev
 
 The hard tier contains long policy documents: at the 9B pipeline's 2048-token limit 36 of 111 items are rejected; this model natively handles 4096 and answers 88% of them correctly. **Context length, not capability, was the bottleneck.**
 
+## One-command install & run
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/metask-ai/metask-jev/main/install.sh | bash
+```
+
+The script: creates a venv, installs pinned dependencies, downloads this model, verifies the A–Z single-token contract, and runs a self-test scoring example — then prints a ready-to-paste Python snippet. Requires an NVIDIA GPU (≥12 GB) or Apple Silicon.
+
+Or manually:
+
+```bash
+git clone https://github.com/metask-ai/metask-jev && cd metask-jev
+pip install -r inference/requirements.txt
+python inference/demo.py --model Raymond1122/metask-jev-4b-policy-mix
+```
+
+```python
+from jev_scorer import load_model, score
+
+model, tok, dev = load_model("Raymond1122/metask-jev-4b-policy-mix")
+
+state = ("The store accepts returns within 30 days of purchase. "
+         "This item was bought 12 days ago and is unopened.")
+schema = {"decision": {
+    "description": "Is the item still eligible for return?",
+    "type": "boolean",
+    "choices": [False, True],
+    "choice_descriptions": {"false": "Not eligible.", "true": "Eligible."},
+}}
+
+r = score(model, tok, state, schema, temperature=2.25)   # per-kind temperature
+print(r["prediction"], r["probabilities"])
+# True {'false': 0.013, 'true': 0.987}
+```
+
+Answer tokens A–Z are verified single tokens for this tokenizer at load; probabilities are a softmax over exactly those logits — the model never generates.
+
 ## Head-to-head summary
 
 | | metask-jev-4b | Bespoke Nimble-9B | Jev 1.13.0 |
