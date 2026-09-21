@@ -208,3 +208,12 @@ Routing, triage, moderation, guardrails, evidence-grounded verification, rubric 
 ## Licence
 
 Apache-2.0. Qwen3.5-4B base keeps its own terms.
+## Serve over HTTP (TypeSafe-compatible)
+
+```bash
+# after install.sh:
+curl -fsSL https://raw.githubusercontent.com/metask-ai/metask-jev/main/serve.sh | bash
+# -> POST /v1/systemone on :8000, same wire format as TypeSafe Jev
+curl -X POST localhost:8000/v1/systemone -H "Content-Type: application/json" \
+  -d '{"state":"...","questions":{"decision":{"type":"noul","instructions":"...","criteria":{"false":"No","true":"Yes"}}}}'
+```
