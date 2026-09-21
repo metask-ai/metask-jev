@@ -42,6 +42,8 @@ Would rank **#5** — ahead of GPT-5.6 Luna and DeepSeek V4.1 Flash, behind djev
 
 The hard tier contains long policy documents: at the 9B pipeline's 2048-token limit 36 of 111 items are rejected; this model natively handles 4096 and answers 88% of them correctly. **Context length, not capability, was the bottleneck.**
 
+Native context is 262,144 tokens (`max_position_embeddings`); 4096 is the validated evaluation point, not an architectural limit.
+
 ## One-command install & run
 
 ```bash
@@ -140,7 +142,7 @@ Wins: verification-style noul (civil +21.0, paws +11.2) and consistency scoring 
 |---|---|---|
 | backbone | Qwen3.5-4B (decoder, LoRA merged) | ModernBERT-large (encoder + 25M head) |
 | params | 4.54B | 421M |
-| context | **4096** (native 32k) | 512 (root) / 1024 (typed-decisions ckpt) |
+| context | **262,144 native** (4096 validated) | 512 (root) / 1024 (typed-decisions ckpt) |
 | training | SFT, candidate CE, 44.8k decisions | RLCD (proper-scoring reward), ~30k |
 | raw ECE | **0.100** | 0.466 |
 | ECE after temp | **0.028** | 0.081 |
