@@ -42,7 +42,7 @@ fi
 
 # ---------- [2/6] 同步 PR adapter + 注册 ----------
 echo "── [2/6] 同步 PR adapter + cli 注册 ──"
-scp -q jevbench-fork/jevbench/adapters/metask_jev.py "$ADDR:$ROOT/jevbench/jevbench/adapters/metask_jev.py"
+scp -q jevbench-fork/jevbench/adapters/metask_jev.py "$ADDR:$ROOT/jevbench/adapters/metask_jev.py"
 ssh "$ADDR" "cd $ROOT/jevbench && python3 - << 'PYEOF'
 from pathlib import Path
 p = Path('jevbench/cli.py')
