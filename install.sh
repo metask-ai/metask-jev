@@ -42,12 +42,12 @@ source .venv/bin/activate
 say "installing torch + transformers (this may take a few minutes)"
 if [ "$(uname)" = "Darwin" ]; then
   pip install -q --upgrade pip
-  pip install -q "torch>=2.4" "transformers>=4.51" "accelerate" "huggingface_hub"
+  pip install -q "torch>=2.4" "transformers>=4.53" "accelerate" "huggingface_hub"
 else
   pip install -q --upgrade pip
   pip install -q "torch>=2.4" --index-url https://download.pytorch.org/whl/cu121 \
     || pip install -q "torch>=2.4"
-  pip install -q "transformers>=4.51" "accelerate" "huggingface_hub"
+  pip install -q "transformers>=4.53" "accelerate" "huggingface_hub"
 fi
 
 # ---- 4. inference code ----
