@@ -48,36 +48,53 @@ The hard tier contains long policy documents: at the 9B pipeline's 2048-token li
 curl -fsSL https://raw.githubusercontent.com/metask-ai/metask-jev/main/install.sh | bash
 ```
 
-The script: creates a venv, installs pinned dependencies, downloads this model, verifies the A–Z single-token contract, and runs a self-test scoring example — then prints a ready-to-paste Python snippet. Requires an NVIDIA GPU (≥12 GB) or Apple Silicon.
+The script: creates a venv, installs pinned dependencies, downloads this model, verifies the A–Z single-token contract, and runs a self-test scoring example. Requires an NVIDIA GPU (≥12 GB) or Apple Silicon.
 
-Or manually:
+## Quickstart
 
-```bash
-git clone https://github.com/metask-ai/metask-jev && cd metask-jev
-pip install -r inference/requirements.txt
-python inference/demo.py --model Raymond1122/metask-jev-4b-policy-mix
-```
+### Transformers (AutoModel)
 
 ```python
-from jev_scorer import load_model, score
+from transformers import AutoTokenizer, Qwen3_5ForConditionalGeneration
+import torch
 
-model, tok, dev = load_model("Raymond1122/metask-jev-4b-policy-mix")
+model = Qwen3_5ForConditionalGeneration.from_pretrained(
+    "Raymond1122/metask-jev-4b-policy-mix", dtype=torch.bfloat16, device_map="auto")
+tok = AutoTokenizer.from_pretrained("Raymond1122/metask-jev-4b-policy-mix")
 
 state = ("The store accepts returns within 30 days of purchase. "
          "This item was bought 12 days ago and is unopened.")
 schema = {"decision": {
     "description": "Is the item still eligible for return?",
-    "type": "boolean",
+    "type": "boolean",                    # "enum" for choice, "boolean" for yes/no
     "choices": [False, True],
     "choice_descriptions": {"false": "Not eligible.", "true": "Eligible."},
 }}
 
-r = score(model, tok, state, schema, temperature=2.25)   # per-kind temperature
+# candidate-logit readout: one forward pass, softmax over the A/B answer tokens.
+# The prompt format (system + user JSON with per-option descriptions) is the
+# contract the model was trained on — build it exactly as shown in
+# jev_schema.py (vendored in the GitHub repo, links below).
+prepared = build_prompt(tok, state, schema, max_input_tokens=4096)
+with torch.no_grad():
+    out = model(**prepared, use_cache=False, logits_to_keep=1)
+logits = out.logits[:, -1, :][0]
+probs = torch.softmax(logits[[tok.convert_tokens_to_ids("A"), tok.convert_tokens_to_ids("B")]] / 2.25, -1)  # noul T
+print(dict(zip(["false", "true"], probs.tolist())))
+```
+
+### Helper library (handles the prompt contract + per-kind temperature for you)
+
+```python
+from jev_scorer import load_model, score   # pip-free: 2 files from the GitHub repo
+
+model, tok, dev = load_model("Raymond1122/metask-jev-4b-policy-mix")
+r = score(model, tok, state, schema, temperature=2.25)   # noul temperature
 print(r["prediction"], r["probabilities"])
 # True {'false': 0.013, 'true': 0.987}
 ```
 
-Answer tokens A–Z are verified single tokens for this tokenizer at load; probabilities are a softmax over exactly those logits — the model never generates.
+Per-kind temperatures: **choice 1.7875 / noul 2.25 / score 2.05**. Answer tokens A–Z are verified single tokens for this tokenizer at load; probabilities are a softmax over exactly those logits — the model never generates.
 
 ## Head-to-head summary
 
