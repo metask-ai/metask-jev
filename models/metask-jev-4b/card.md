@@ -78,6 +78,29 @@ Wins: verification-style noul (civil +21.0, paws +11.2) and consistency scoring 
 
 <img src="eval/figs/fig1_subsets.png" width="620" alt="13-subset comparison">
 
+## vs Laya (421M, the strongest open small-model baseline)
+
+[Laya](https://huggingface.co/convaiinnovations/laya) trains a 25M marker head on ModernBERT-large with RLCD (pure RL, no cross-entropy) over ~30k human-labeled decisions; its typed-decisions checkpoint reports 0.766 acc / 0.062 Brier on its own 400-case suite. Different architectures, different suites — the comparison below is indicative, not apples-to-apples.
+
+| | metask-jev-4b | laya |
+|---|---|---|
+| backbone | Qwen3.5-4B (decoder, LoRA merged) | ModernBERT-large (encoder + 25M head) |
+| params | 4.54B | 421M |
+| context | **4096** (native 32k) | 512 (root) / 1024 (typed-decisions ckpt) |
+| training | SFT, candidate CE, 44.8k decisions | RLCD (proper-scoring reward), ~30k |
+| raw ECE | **0.100** | 0.466 |
+| ECE after temp | **0.028** | 0.081 |
+| long documents (JevBench hard, ≤4096 tok) | **59.5%** | not run (512–1024 ctx) |
+| high-cardinality choice (77 options) | n/a (26-option cap, same as Jev) | 0.425 without tuning |
+| multilingual | en only | **100+ languages** (separate ckpt) |
+| generative capability retained | yes (base LM) | no |
+
+**Where we win**: calibration out of the box (raw ECE 0.100 is below laya's *post*-temperature 0.081; after our own temperature fit it is 0.028, ~3× lower), long-context hard items (59.5% on JevBench hard — laya's 512–1024 budget cannot run that tier), and 12/13 over Nimble-9B on human-labeled data.
+
+**Where laya wins**: parameter efficiency (421M vs 4.5B), 100+ languages via its multilingual checkpoint, a mature packaging story (PyPI, Router, demo Space), and the RLCD training methodology is fully documented (arXiv:2510.01237).
+
+<img src="eval/figs/fig8_laya_compare.png" width="660" alt="Laya comparison">
+
 ## Calibration
 
 Ships over-confident, like every model in this family. One temperature per question kind, fit by NLL minimization on a held-out validation split (never on eval). ECE (10 bins): **0.100 → 0.028**.
