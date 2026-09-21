@@ -19,7 +19,7 @@
     local: ~/prj/metask-jev-lab-work/metask-jev-4b/merged        # 待 rsync 落地
     kunshan: ~/nimble-small/runs/train/p4b-policy-mix/merged
   remote:
-    hf: Raymond1122/metask-jev-4b-policy-mix
+    hf: wayfind/metask-jev-4b-policy-mix
     modelscope: null   # 待发布
   status: ready-to-release
 

@@ -6,7 +6,7 @@
 
 | 模型 | 基座 | 13 子集宏平均 | JevBench 231 | 权重 |
 |---|---|---:|---:|---|
-| **metask-jev-4b** | Qwen3.5-4B | **79.6%** | **80.1%** (@4096) | [HF](https://huggingface.co/Raymond1122/metask-jev-4b-policy-mix) · 魔搭待发 |
+| **metask-jev-4b** | Qwen3.5-4B | **79.6%** | **80.1%** (@4096) | [HF](https://huggingface.co/wayfind/metask-jev-4b-policy-mix) · 魔搭待发 |
 | metask-jev-0.8b | Qwen3.5-0.8B | 74.7% | 55.8% | 未发布 |
 
 参照：Bespoke Nimble-9B 74.8% / 63.5（第14名）；Jev 1.13.0 76.0% / 75.3（第2名）。
@@ -16,7 +16,7 @@
 ```bash
 git clone https://github.com/metask-ai/metask-jev && cd metask-jev
 pip install -r inference/requirements.txt
-python inference/demo.py --model Raymond1122/metask-jev-4b-policy-mix
+python inference/demo.py --model wayfind/metask-jev-4b-policy-mix
 ```
 
 输入一段 state + schema（choice / boolean / rubric score），输出每个选项的校准概率。单次前向，~24ms/决策（RTX 4090）。

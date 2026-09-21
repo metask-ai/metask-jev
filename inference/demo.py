@@ -18,7 +18,7 @@ schema = {"decision": {
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model", default="Raymond1122/metask-jev-4b-policy-mix")
+    ap.add_argument("--model", default="wayfind/metask-jev-4b-policy-mix")
     args = ap.parse_args()
     model, tok, dev = load_model(args.model)
     r = score(model, tok, state, schema, temperature=DEFAULTS["noul"])

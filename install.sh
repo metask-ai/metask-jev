@@ -6,7 +6,7 @@
 # Usage: curl -fsSL https://raw.githubusercontent.com/metask-ai/metask-jev/main/install.sh | bash
 set -euo pipefail
 
-MODEL_ID="Raymond1122/metask-jev-4b-policy-mix"
+MODEL_ID="wayfind/metask-jev-4b-policy-mix"
 DIR="${HOME}/metask-jev"
 REPO="https://github.com/metask-ai/metask-jev"
 

@@ -61,8 +61,8 @@ from transformers import AutoTokenizer, Qwen3_5ForConditionalGeneration
 import torch
 
 model = Qwen3_5ForConditionalGeneration.from_pretrained(
-    "Raymond1122/metask-jev-4b-policy-mix", dtype=torch.bfloat16, device_map="auto")
-tok = AutoTokenizer.from_pretrained("Raymond1122/metask-jev-4b-policy-mix")
+    "wayfind/metask-jev-4b-policy-mix", dtype=torch.bfloat16, device_map="auto")
+tok = AutoTokenizer.from_pretrained("wayfind/metask-jev-4b-policy-mix")
 
 state = ("The store accepts returns within 30 days of purchase. "
          "This item was bought 12 days ago and is unopened.")
@@ -90,7 +90,7 @@ print(dict(zip(["false", "true"], probs.tolist())))
 ```python
 from jev_scorer import load_model, score   # pip-free: 2 files from the GitHub repo
 
-model, tok, dev = load_model("Raymond1122/metask-jev-4b-policy-mix")
+model, tok, dev = load_model("wayfind/metask-jev-4b-policy-mix")
 r = score(model, tok, state, schema, temperature=2.25)   # noul temperature
 print(r["prediction"], r["probabilities"])
 # True {'false': 0.013, 'true': 0.987}
