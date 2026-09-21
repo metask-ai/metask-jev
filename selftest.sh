@@ -59,7 +59,7 @@ for pair in "easy:48" "judge:72" "hard:111"; do
   OK=0; C=0
   if [ -s "$RESULTS/$F.jsonl" ]; then
     while IFS= read -r line; do
-      R=$(echo "$line" | python3 -c "import json,sys; r=json.load(sys.stdin); print(r['ok'], r['correct'])")
+      R=$(echo "$line" | python3 -c "import json,sys; r=json.load(sys.stdin); print(r['ok'], str(r['prediction'])==str(r['expected']))")
       [ "$(echo $R | cut -d' ' -f1)" = "True" ] && OK=$((OK+1)) && { [ "$(echo $R | cut -d' ' -f2)" = "True" ] && C=$((C+1)); }
     done < "$RESULTS/$F.jsonl"
   fi
