@@ -99,6 +99,16 @@ Single forward pass over the prompt, one softmax over ≤26 candidate logits.
 
 Objective and prompt format are unchanged from the official Nimble protocol; the recipe card with reproduction commands lives in the [GitHub repo](https://github.com/metask-ai/metask-jev).
 
+## On the JevBench board
+
+Self-measured axes inserted into the published v1.2.7 ranking (16 official entrants + this model). Official run pending — axes here use our 231-decision protocol for Intelligence, val-fit temperature for Calibration, self-hosted 4090 for Speed/Cost.
+
+<img src="eval/figs/fig6_board_style.png" width="660" alt="JevBench board with metask-jev-4b">
+
+Would rank **#5** — ahead of GPT-5.6 Luna and DeepSeek V4.1 Flash, behind djev — with the top-right quadrant of the Intelligence×Speed plane to itself among open weights:
+
+<img src="eval/figs/fig7_scatter.png" width="660" alt="Intelligence vs Speed scatter">
+
 ## Honest limits
 
 - **summeval-relevance (26.7%)** is the one clear regression vs 9B (49.2%): a 5-level rubric with a systematic 3↔4 boundary shift. NLL and expected-score error are actually *better* than 9B — the argmax metric amplifies the boundary shift. If your use case is fine-grained relevance scoring, evaluate this subset yourself first.
