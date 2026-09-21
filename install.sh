@@ -21,11 +21,18 @@ elif [ "$(uname)" = "Darwin" ]; then
 fi
 say "accelerator: $GPU_HINT"
 
-# ---- 1. python ----
-if command -v python3 >/dev/null 2>&1; then
-  PY=python3
-else
-  say "ERROR: python3 not found"; exit 1
+# ---- 1. python (needs >= 3.10: the Qwen3_5 model class lives in transformers 5.x) ----
+PY=""
+for cand in python3.14 python3.13 python3.12 python3.11 python3; do
+  if command -v "$cand" >/dev/null 2>&1; then
+    major=$("$cand" -c 'import sys; print(sys.version_info[0])')
+    minor=$("$cand" -c 'import sys; print(sys.version_info[1])')
+    if [ "$major" -eq 3 ] && [ "$minor" -ge 10 ]; then PY="$cand"; break; fi
+  fi
+done
+if [ -z "$PY" ]; then
+  say "ERROR: python >= 3.10 required (transformers 5.x needs it for the Qwen3_5 class)"
+  exit 1
 fi
 say "python: $($PY --version)"
 
