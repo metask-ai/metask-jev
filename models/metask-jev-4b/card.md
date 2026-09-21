@@ -21,6 +21,29 @@ pipeline_tag: text-classification
 
 A calibrated **typed-decision model**: give it a state (text, ticket, policy, JSON) and a typed question — `choice`, `boolean`, or rubric `score` — and it returns a probability for every option in a **single forward pass (~24 ms)**. No generation, no parsing, nothing to hallucinate.
 
+## On the JevBench board
+
+Self-measured axes inserted into the published v1.2.7 ranking (16 official entrants + this model). Official run pending — axes here use our 231-decision protocol for Intelligence, val-fit temperature for Calibration, self-hosted 4090 for Speed/Cost.
+
+<img src="eval/figs/fig6_board_style.png" width="660" alt="JevBench board with metask-jev-4b">
+
+Would rank **#5** — ahead of GPT-5.6 Luna and DeepSeek V4.1 Flash, behind djev — with the top-right quadrant of the Intelligence×Speed plane to itself among open weights:
+
+<img src="eval/figs/fig7_scatter.png" width="660" alt="Intelligence vs Speed scatter">
+
+**JevBench v1.2 — public 231 decisions, tier split** (422-as-wrong protocol, @4096 ctx):
+
+| tier | items | metask-jev-4b |
+|---|---:|---:|
+| judge (original) | 72 | 98.6% |
+| easy | 48 | 100.0% |
+| hard | 111 | 59.5% |
+| **total** | 231 | **80.1%** |
+
+The hard tier contains long policy documents: at the 9B pipeline's 2048-token limit 36 of 111 items are rejected; this model natively handles 4096 and answers 88% of them correctly. **Context length, not capability, was the bottleneck.**
+
+## Head-to-head summary
+
 | | metask-jev-4b | Bespoke Nimble-9B | Jev 1.13.0 |
 |---|---:|---:|---:|
 | 13 human-labeled subsets (3,880 items), macro | **79.6%** | 74.8% | 76.0% |
@@ -55,19 +78,6 @@ Wins: verification-style noul (civil +21.0, paws +11.2) and consistency scoring 
 
 <img src="eval/figs/fig1_subsets.png" width="620" alt="13-subset comparison">
 
-## JevBench v1.2 — public 231 decisions
-
-Scored under the official protocol (422 = wrong), at **4096-token context** — the same configuration used for every system below. The hard tier contains long policy documents: at the 9B pipeline's 2048-token limit 36 of 111 items are rejected; this model natively handles 4096 and answers 88% of them correctly. **Context length, not capability, was the bottleneck.**
-
-| tier | items | metask-jev-4b |
-|---|---:|---:|
-| judge (original) | 72 | 98.6% |
-| easy | 48 | 100.0% |
-| hard | 111 | 59.5% |
-| **total** | 231 | **80.1%** |
-
-<img src="eval/figs/fig2_jevbench_h2h.png" width="620" alt="JevBench head-to-head">
-
 ## Calibration
 
 Ships over-confident, like every model in this family. One temperature per question kind, fit by NLL minimization on a held-out validation split (never on eval). ECE (10 bins): **0.100 → 0.028**.
@@ -98,16 +108,6 @@ Single forward pass over the prompt, one softmax over ≤26 candidate logits.
 4. **Objective** — candidate cross-entropy at the last prompt position. 1 epoch, lr 2e-5, batch 4×2, BF16 + gradient checkpointing. Single RTX 4090, 2h34m, peak 19 GB.
 
 Objective and prompt format are unchanged from the official Nimble protocol; the recipe card with reproduction commands lives in the [GitHub repo](https://github.com/metask-ai/metask-jev).
-
-## On the JevBench board
-
-Self-measured axes inserted into the published v1.2.7 ranking (16 official entrants + this model). Official run pending — axes here use our 231-decision protocol for Intelligence, val-fit temperature for Calibration, self-hosted 4090 for Speed/Cost.
-
-<img src="eval/figs/fig6_board_style.png" width="660" alt="JevBench board with metask-jev-4b">
-
-Would rank **#5** — ahead of GPT-5.6 Luna and DeepSeek V4.1 Flash, behind djev — with the top-right quadrant of the Intelligence×Speed plane to itself among open weights:
-
-<img src="eval/figs/fig7_scatter.png" width="660" alt="Intelligence vs Speed scatter">
 
 ## Honest limits
 
