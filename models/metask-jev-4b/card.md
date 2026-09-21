@@ -234,3 +234,34 @@ curl -X POST localhost:8000/v1/systemone \
   }'
 # -> {"answers":{"decision":{"type":"noul","noul":0.944,"probabilities":{"false":0.056,"true":0.944}}}}
 ```
+
+## Run the official JevBench harness locally
+
+The numbers above were produced with the official JevBench harness. Run it yourself on this machine (CUDA or MPS auto-detected):
+
+```bash
+# 1. clone the harness (or our fork with the metask_jev adapter pre-registered)
+git clone https://github.com/metask-ai/metask-jev-lab && cd metask-jev-lab/jevbench-fork
+pip install -e .
+
+# 2. point the adapter at the downloaded weights (install.sh step 5 prints the path)
+export METASK_JEV_MODEL_PATH=$(cat ~/metask-jev/model_path.txt)
+export METASK_JEV_NIMBLE_PACKAGE=$(python -c "import jev_schema, os; print(os.path.dirname(os.path.abspath(jev_schema.__file__)))")  # vendored nimble package
+
+# 3. run all three public tiers (one request at a time, ~30 min on MPS)
+python -m jevbench.cli run --tasks datasets/public/easy.jsonl \
+  --adapter metask_jev --results ~/metask-jev/bench_results/easy.jsonl \
+  --cost-basis local_gpu_no_provider_tariff
+python -m jevbench.cli run --tasks datasets/public/original.jsonl \
+  --adapter metask_jev --results ~/metask-jev/bench_results/original.jsonl \
+  --cost-basis local_gpu_no_provider_tariff
+python -m jevbench.cli run --tasks datasets/public/hard.jsonl \
+  --adapter metask_jev --results ~/metask-jev/bench_results/hard.jsonl \
+  --cost-basis local_gpu_no_provider_tariff
+```
+
+Or the packaged one-command version (same scoring, self-contained runner):
+
+```bash
+bash run_mac_bench.sh    # easy + judge + hard, resumable, summary table at the end
+```
