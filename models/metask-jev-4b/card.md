@@ -210,10 +210,27 @@ Routing, triage, moderation, guardrails, evidence-grounded verification, rubric 
 Apache-2.0. Qwen3.5-4B base keeps its own terms.
 ## Serve over HTTP (TypeSafe-compatible)
 
+Start the server (after install.sh):
+
 ```bash
-# after install.sh:
 curl -fsSL https://raw.githubusercontent.com/metask-ai/metask-jev/main/serve.sh | bash
 # -> POST /v1/systemone on :8000, same wire format as TypeSafe Jev
-curl -X POST localhost:8000/v1/systemone -H "Content-Type: application/json" \
-  -d '{"state":"...","questions":{"decision":{"type":"noul","instructions":"...","criteria":{"false":"No","true":"Yes"}}}}'
+```
+
+Then score a decision (copy-paste ready):
+
+```bash
+curl -X POST localhost:8000/v1/systemone \
+  -H "Content-Type: application/json" \
+  -d '{
+    "state": "The store accepts returns within 30 days of purchase. This item was bought 12 days ago and is unopened.",
+    "questions": {
+      "decision": {
+        "type": "noul",
+        "instructions": "Is the item still eligible for return?",
+        "criteria": {"false": "Not eligible.", "true": "Eligible."}
+      }
+    }
+  }'
+# -> {"answers":{"decision":{"type":"noul","noul":0.944,"probabilities":{"false":0.056,"true":0.944}}}}
 ```
