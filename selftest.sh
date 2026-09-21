@@ -39,6 +39,10 @@ for f in easy original hard; do
 done
 
 # ---------- 跑分 (三层全量, 断点续跑) ----------
+if [ ! -f "run_bench_local.py" ]; then
+  say "下载评测 runner (run_bench_local.py)..."
+  curl -fsSL "https://raw.githubusercontent.com/metask-ai/metask-jev/main/run_bench_local.py" -o "run_bench_local.py"
+fi
 say "开始跑分: easy 48 + judge 72 + hard 111 (断点续跑, MPS 约 25-40 分钟)"
 python run_bench_local.py --tiers "easy judge hard" \
   --results-dir "$RESULTS" \

@@ -57,12 +57,16 @@ else
   pip install -q "transformers>=4.53" "accelerate" "huggingface_hub"
 fi
 
-# ---- 4. inference code ----
+# ---- 4. inference code + benchmark runner ----
 if [ ! -f "jev_scorer.py" ]; then
   say "fetching inference code from $REPO"
   for f in jev_scorer.py jev_schema.py; do
     curl -fsSL "$REPO/raw/main/inference/$f" -o "$f"
   done
+fi
+if [ ! -f "run_bench_local.py" ]; then
+  say "fetching benchmark runner"
+  curl -fsSL "$REPO/raw/main/run_bench_local.py" -o "run_bench_local.py"
 fi
 
 # ---- 5. model download (via huggingface_hub snapshot) ----
