@@ -1,9 +1,9 @@
-"""Upload a released nimble model to ModelScope (魔搭), mirroring the HF release.
+"""Upload a released metask-jev model to ModelScope (魔搭), mirroring the HF release.
 
 Requires: pip install modelscope; MSCODESCOPE_TOKEN or logged-in via
 `modelscope login`. Reads the same registry entry and card as the HF uploader.
 
-Usage: python release/upload_modelscope.py --name nimble-4b
+Usage: python release/upload_modelscope.py --name metask-jev-4b
 """
 import argparse
 import subprocess
@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parent.parent
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--name", required=True)
-    ap.add_argument("--work-dir", default=str(ROOT.parent / "nimble-lab-work"))
+    ap.add_argument("--work-dir", default=str(ROOT.parent / "metask-jev-lab-work"))
     args = ap.parse_args()
 
     registry = yaml.safe_load((ROOT / "models" / "registry.yaml").read_text())

@@ -1,6 +1,6 @@
-"""Minimal demo: score one typed decision with a released nimble model."""
+"""Minimal demo: score one typed decision with a released metask-jev model."""
 import argparse
-from nimble_scorer import load_model, score
+from jev_scorer import load_model, score
 
 DEFAULTS = {
     # per-kind temperature (see models/<name>/temperature.json)
@@ -18,7 +18,7 @@ schema = {"decision": {
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model", default="Raymond1122/nimble-4b-policy-mix")
+    ap.add_argument("--model", default="Raymond1122/metask-jev-4b-policy-mix")
     args = ap.parse_args()
     model, tok, dev = load_model(args.model)
     r = score(model, tok, state, schema, temperature=DEFAULTS["noul"])

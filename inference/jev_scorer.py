@@ -46,7 +46,7 @@ def score(model, tok, state, schema, temperature=1.0, max_input_tokens=4096):
     temperature: divide logits by this before softmax (per-kind calibration)
     Returns {"prediction", "probabilities", "logits"} keyed by choice value.
     """
-    from nimble_schema import prepare_prompts, choice_key  # vendored prompt builder
+    from jev_schema import prepare_prompts, choice_key  # vendored prompt builder
 
     prepared = prepare_prompts(tok, state, schema, max_input_tokens)
     i = prepared.names.index("decision")

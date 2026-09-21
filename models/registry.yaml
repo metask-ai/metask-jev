@@ -1,11 +1,11 @@
-# Nimble-Lab 模型注册表
+# Metask Jev-Lab 模型注册表
 # 所有实验室产出的模型在此登记；权重本体不入 git，路径/远端 ID 在此引用。
 # 字段: name / base(基座+revision) / recipe(配方卡路径) / params / results 摘要 /
 #       artifacts 本地权重路径 / remote(hf_id, modelscope_id) / status
 
-- name: nimble-4b
+- name: metask-jev-4b
   base: Qwen/Qwen3.5-4B@851bf6e806efd8d0a36b00ddf55e13ccb7b8cd0a
-  recipe: recipes/nimble-4b.md
+  recipe: recipes/metask-jev-4b.md
   params: 4.54B
   lora: {r: 16, alpha: 32}
   results:
@@ -16,14 +16,14 @@
     prompt_limit: 4096
     temperature: {choice: 1.7875, noul: 2.25, score: 2.05}
   artifacts:
-    local: ~/prj/nimble-lab-work/nimble-4b/merged        # 待 rsync 落地
+    local: ~/prj/metask-jev-lab-work/metask-jev-4b/merged        # 待 rsync 落地
     kunshan: ~/nimble-small/runs/train/p4b-policy-mix/merged
   remote:
-    hf: Raymond1122/nimble-4b-policy-mix
+    hf: Raymond1122/metask-jev-4b-policy-mix
     modelscope: null   # 待发布
   status: ready-to-release
 
-- name: nimble-0.8b
+- name: metask-jev-0.8b
   base: Qwen/Qwen3.5-0.8B
   recipe: null   # R6 配方卡待补
   params: 0.86B

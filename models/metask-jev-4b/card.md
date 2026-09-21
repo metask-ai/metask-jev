@@ -1,4 +1,4 @@
-# Nimble-4B — Qwen3.5-4B fine-tune for typed decisions
+# Metask-Jev-4B — Qwen3.5-4B fine-tune for typed decisions
 
 A context-grounded typed-decision model: given a piece of state and a bounded rubric, it returns a calibrated probability for every option in a single forward pass. No generation, no parsing.
 
@@ -8,11 +8,11 @@ A context-grounded typed-decision model: given a piece of state and a bounded ru
 
 | Benchmark | Score | Reference |
 |---|---:|---|
-| 13 public human-labeled subsets (3,880 items), macro | **79.6%** | Nimble-9B 74.8% · Jev 76.0% |
+| 13 public human-labeled subsets (3,880 items), macro | **79.6%** | Bespoke Nimble-9B 74.8% · Jev 76.0% |
 | JevBench v1.2 public 231 decisions @4096 ctx | **80.1%** | judge 98.6 / easy 100 / hard 59.5 |
 | Calibration (ECE, by-kind temperature) | **0.0283** | fit on held-out val, never on eval |
 
-Per-subset (13-subset suite): 12 of 13 subsets exceed Nimble-9B.
+Per-subset (13-subset suite): 12 of 13 subsets exceed Bespoke Nimble-9B.
 
 ## Inference
 

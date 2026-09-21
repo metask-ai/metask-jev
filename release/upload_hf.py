@@ -1,9 +1,9 @@
-"""Upload a released nimble model to HuggingFace (run from local Mac).
+"""Upload a released metask-jev model to HuggingFace (run from local Mac).
 
 Reads models/registry.yaml for repo id and card; weights are pulled from the
 machine recorded in `artifacts` (rsync) if not present locally.
 
-Usage: python release/upload_hf.py --name nimble-4b
+Usage: python release/upload_hf.py --name metask-jev-4b
 """
 import argparse
 import subprocess
@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parent.parent
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--name", required=True, help="model name in registry.yaml")
-    ap.add_argument("--work-dir", default=str(ROOT.parent / "nimble-lab-work"))
+    ap.add_argument("--work-dir", default=str(ROOT.parent / "metask-jev-lab-work"))
     args = ap.parse_args()
 
     registry = yaml.safe_load((ROOT / "models" / "registry.yaml").read_text())
