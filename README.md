@@ -14,7 +14,7 @@
 ## 一键复现推理
 
 ```bash
-git clone https://github.com/Raymond1122/metask-jev && cd metask-jev
+git clone https://github.com/metask-ai/metask-jev && cd metask-jev
 pip install -r inference/requirements.txt
 python inference/demo.py --model Raymond1122/metask-jev-4b-policy-mix
 ```
