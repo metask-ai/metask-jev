@@ -1,0 +1,11 @@
+{
+ "by_kind": {
+  "choice": 1.7875,
+  "noul": 2.25,
+  "score": 2.05,
+  "global": 1.9
+ },
+ "note": "fit on aug3 val; apply logits/T by kind at inference",
+ "ece_before": 0.1002,
+ "ece_after": 0.0283
+}
