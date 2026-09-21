@@ -243,8 +243,15 @@ The numbers above come from the official JevBench harness. Two ways to reproduce
 
 ```bash
 git clone https://github.com/metask-ai/metask-jev && cd metask-jev
-bash install.sh          # venv + deps + weights + self-test
-bash run_mac_bench.sh    # all three public tiers, resumable, summary at the end
+bash install.sh     # venv + deps + weights + self-test
+bash selftest.sh    # all three public tiers, resumable, summary table
+```
+
+Or without cloning:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/metask-ai/metask-jev/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/metask-ai/metask-jev/main/selftest.sh | bash
 ```
 
 **Option B — official harness (exact protocol used for the leaderboard):**
