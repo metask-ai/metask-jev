@@ -50,14 +50,18 @@ say "═══════════ 结果汇总 ═════════�
 printf "| %-8s | %-12s | %-9s |\n" "tier" "correct/att" "accuracy"
 printf "|----------|--------------|----------|\n"
 GC=0; GN=0
+# tier 名 -> JevBench 官方结果文件名 (judge 层的文件叫 original.jsonl)
+tier_file() { case "$1" in easy) echo easy;; judge) echo original;; hard) echo hard;; esac; }
+
 for pair in "easy:48" "judge:72" "hard:111"; do
   T=${pair%%:*}; N=${pair##*:}
-  OK=0; C=0; F=0
-  if [ -s "$RESULTS/$T.jsonl" ]; then
+  F=$(tier_file "$T")
+  OK=0; C=0
+  if [ -s "$RESULTS/$F.jsonl" ]; then
     while IFS= read -r line; do
       R=$(echo "$line" | python3 -c "import json,sys; r=json.load(sys.stdin); print(r['ok'], r['correct'])")
       [ "$(echo $R | cut -d' ' -f1)" = "True" ] && OK=$((OK+1)) && { [ "$(echo $R | cut -d' ' -f2)" = "True" ] && C=$((C+1)); }
-    done < "$RESULTS/$T.jsonl"
+    done < "$RESULTS/$F.jsonl"
   fi
   GN=$((GN+OK)); GC=$((GC+C))
   if [ "$OK" -gt 0 ]; then
