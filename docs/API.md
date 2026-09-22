@@ -79,16 +79,22 @@ Content-Type: application/json
 boolean 额外有 `"noul": P(true)` 顶层便捷字段；choice（请求 type 写 `choice` 时）
 额外有 `"choice": "<argmax 选项值>"`。
 
-### 错误
+### 错误（全部实测）
 
-| HTTP | 含义 | 示例 |
+| HTTP | 触发条件 | 响应体 |
 |---|---|---|
-| 200 | 成功（部分字段失败时带 `partial_errors`） | |
-| 422 | state 超过 4096 token，**不截断**，需自行切分 | `{"error": "422 over context limit: ... limit is 4096"}` |
-| 500 | 推理/服务错误 | `{"error": {...}}` |
-| 400 | JSON 解析失败 | |
+| 400 | 缺 `state` / 缺 `questions` / `questions` 为空 / JSON 解析失败 | `{"error": "request must be {\"state\": str|obj, \"questions\": {...}}"}` |
+| 200 + `partial_errors` | 多字段请求中**部分**字段不合法，其余正常返回 | `{"answers": {...}, "partial_errors": {"bad": "decision: enum choices must be 1–26 nonempty strings."}}` |
+| 200 + `error` 对象 | 单字段请求不合法（type 不识别 / choices 为空 / state 为空字符串） | `{"error": {"字段名": "supported types are enum and boolean."}}` |
+| 422 | state 渲染后超 4096 token，**不截断** | `{"error": "422 over context limit: ... limit is 4096"}` |
+| 500 | 服务内部错误 | `{"error": ...}` |
 
-题型不合法：`{"error": {"字段名": "supported types are enum and boolean."}}`
+**字段级校验规则**（不合法即进 `error`/`partial_errors`）：
+- 字段名：非空字符串
+- `type`：只接受 `boolean` / `enum` / `score`（`noul`/`choice` 作为别名接受）
+- `description` 或 `instructions`：二选一，非空
+- `criteria`：enum/score 必填；enum 的 key 唯一且 1–26 个；score 用数组按序给档位
+- `state`：非空字符串（或可 JSON 序列化的对象，会自动序列化）
 
 ---
 
