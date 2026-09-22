@@ -161,10 +161,14 @@ def health():
 @app.post("/v1/systemone")
 def systemone():
     body = request.get_json(force=True)
+    if not isinstance(body, dict) or "state" not in body or "questions" not in body:
+        return jsonify(error='request must be {"state": str|obj, "questions": {...}}'), 400
     state = body["state"]
     if not isinstance(state, str):
         state = json.dumps(state, ensure_ascii=False)
     questions = body["questions"]
+    if not isinstance(questions, dict) or not questions:
+        return jsonify(error='"questions" must be a nonempty object'), 400
 
     answers, errors = {}, {}
     for name, q in questions.items():
