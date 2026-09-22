@@ -143,6 +143,8 @@ criteria/description 建议与 state 同语言（英文说明+中文 state 也�
 
 ## 6. curl 快速验证
 
+**单字段 boolean：**
+
 ```bash
 curl -s -X POST http://58.211.6.133:10420/v1/systemone \
   -H "Content-Type: application/json" \
@@ -152,3 +154,42 @@ curl -s -X POST http://58.211.6.133:10420/v1/systemone \
                                 "criteria": {"alarm": "闹钟", "weather": "天气", "cooking": "菜谱"}}}}'
 # -> {"answers":{"domain":{"probabilities":{"alarm":0.986,...},"type":"enum"}},...}
 ```
+
+**多字段业务示例（一次请求，两个判定共享一次 prefill）：**
+
+```bash
+curl -s -X POST http://58.211.6.133:10420/v1/systemone \
+  -H "Content-Type: application/json" \
+  -d '{
+    "state": "会员条款第3条：年费会员可在会员期内随时取消，取消后会员权益保留至当前计费周期结束，已支付费用不退还。用户已开通年费会员2个月，现申请取消并要求退还剩余10个月费用。",
+    "questions": {
+      "refund_required": {
+        "type": "boolean",
+        "description": "按照条款，用户要求退还未使用月份的费用是否合理？"
+      },
+      "action": {
+        "type": "enum",
+        "description": "客服应当采取哪种处理？",
+        "criteria": {
+          "refund": "全额退还剩余费用",
+          "credit": "折算为等值代金券/延长会员",
+          "reject": "按条款拒绝退款，解释权益保留至周期结束"
+        }
+      }
+    }
+  }'
+```
+
+实测响应（概率已温度校准，可直接当置信度）：
+
+```json
+{"answers": {
+   "refund_required": {"probabilities": {"false": 0.950, "true": 0.050}, "type": "boolean"},
+   "action": {"probabilities": {"credit": 0.009, "refund": 0.010, "reject": 0.981},
+              "type": "enum"}},
+ "model": "metask-jev-4b",
+ "usage": {"provider": "self-hosted", "tariff": "none"}}
+```
+
+读法：条款明确“费用不退”→ `refund_required=false`（95.0%）；处理建议 `reject`（98.1%），
+即按条款拒绝并解释权益保留至周期结束。
