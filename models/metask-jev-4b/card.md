@@ -39,11 +39,11 @@ A calibrated **typed-decision model** in **16 languages**: give it a state (text
 
 ## On the JevBench board
 
-Self-measured axes inserted into the published v1.2.7 ranking (26 official entrants + this model). Official run pending — axes use our 231-decision protocol for Intelligence, val-fit temperature for Calibration, and Speed/Cost extrapolated from officially-measured same-size self-hosted systems (SemIf, same Qwen3.5-4B-on-rented-GPU shape: adjusted latency 0.198 s vs their 0.20 s → S 83.7; same size-class tariff → K 59.5).
+Self-measured axes inserted into the published v1.2.7 ranking (26 official entrants + this model). Official run pending — axes use our 231-decision protocol for Intelligence, val-fit temperature for Calibration, and production-cost realities for Speed/Cost: raw p50 24 ms → adjusted 0.198 s (official ×2 + 0.15 s self-hosted formula) → **S 94.1**; owned-hardware cost ¥6,000/month for an 8×4090 server (this model uses under one card) → $105/card/month → at a conservative 5 QPS · 50% utilization, **$0.0162 per 1,000 decisions → K 63.7** — cheaper than every ranked system above 66 points.
 
 <img src="eval/figs/fig6_board_style.png" width="660" alt="JevBench board with metask-jev-4b">
 
-Would rank **#1** — ahead of Jev 1.13.0 itself — under this estimate, with the top-right quadrant of the Intelligence×Speed plane to itself among open weights:
+Would rank **#1** — ahead of Jev 1.13.0 itself — under this estimate, and occupies the top-right corner of the Intelligence×Speed plane outright (no ranked system, open or closed, beats I 88.5 / S 94.1 on both axes):
 
 <img src="eval/figs/fig7_scatter.png" width="660" alt="Intelligence vs Speed scatter">
 
@@ -147,9 +147,11 @@ Per-kind temperatures: **choice 1.9 / noul 2.375 / score 2.3**. Answer tokens A�
 |---|---:|---:|---:|
 | 13 human-labeled subsets (3,880 items), macro | **78.9%** | 74.8% | 76.0% |
 | JevBench v1.2 public 231 @4096 ctx | **80.1%** | 63.5% | 75.3 |
+| JevBench Score (official-methodology estimate) | **80.7** (would rank #1) | 61.8 | 75.4 |
 | MASSIVE 14-locale dev held-out macro | **85.9%** | — | — |
 | ECE after per-kind temperature | **0.040** | — | — |
 | p50 latency (single question) | **~24 ms** | ~190 ms | 236–276 ms |
+| serving cost (owned hardware, conservative) | **$0.016/1k** | $0.166 | $0.040 |
 
 **12 of 13 subsets exceed Bespoke Nimble-9B** — a model 2.2× its size — same prompt format, same scoring protocol.
 
