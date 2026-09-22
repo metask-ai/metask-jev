@@ -183,13 +183,18 @@ def systemone():
         if q["type"] == "noul":
             answers[name] = {"type": "noul", "noul": float(probs.get("true", 0.0)),
                              "probabilities": probs}
+        elif q["type"] == "choice":
+            # TypeSafe wire format: choice answers carry the argmax too
+            answers[name] = {"type": "choice", "choice": r["prediction"],
+                             "probabilities": probs}
         else:
             answers[name] = {"type": q["type"], "probabilities": probs}
     if errors and not answers:
         return jsonify(error=errors), 500
-    resp = jsonify(answers=answers)
+    resp = jsonify(answers=answers, model="metask-jev-4b",
+                   usage={"provider": "self-hosted", "tariff": "none"})
     if errors:
-        resp = jsonify(answers=answers, partial_errors=errors)
+        resp = jsonify(answers=answers, model="metask-jev-4b", partial_errors=errors)
     with _stats_lock:
         _stats["n"] += 1
         if time.time() - _stats["window_start"] > 60:
