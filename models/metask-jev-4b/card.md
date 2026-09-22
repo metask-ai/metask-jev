@@ -35,15 +35,15 @@ pipeline_tag: text-classification
 
 # Metask-Jev-4B
 
-A calibrated **typed-decision model** in **16 languages**: give it a state (text, ticket, policy, JSON) and a typed question — `choice`, `boolean`, or rubric `score` — and it returns a probability for every option in a **single forward pass (~24 ms)**. No generation, no parsing, nothing to hallucinate.
+A calibrated **typed-decision model** in **16 languages**: give it a state (text, ticket, policy, JSON) and a typed question — `choice`, `boolean`, or rubric `score` — and it returns a probability for every option in a **single forward pass (~63 ms measured p50 on a 4090)**. No generation, no parsing, nothing to hallucinate.
 
 ## On the JevBench board
 
-Self-measured axes inserted into the published v1.2.7 ranking (26 official entrants + this model). Official run pending — axes use our 231-decision protocol for Intelligence, val-fit temperature for Calibration, and production-cost realities for Speed/Cost: raw p50 24 ms → adjusted 0.198 s (official ×2 + 0.15 s self-hosted formula) → **S 94.1**; owned-hardware cost ¥6,000/month for an 8×4090 server (this model uses under one card) → $105/card/month → at a conservative 5 QPS · 50% utilization, **$0.0162 per 1,000 decisions → K 63.7** — cheaper than every ranked system above 66 points.
+Self-measured axes inserted into the published v1.2.7 ranking (26 official entrants + this model). Official run pending — axes use our 231-decision protocol for Intelligence, val-fit temperature for Calibration, and measured production numbers for Speed/Cost: JevBench-231 p50 **62.8 ms** on a 4090 → adjusted 0.276 s (official ×2 + 0.15 s self-hosted formula) → **S 91.2**; owned-hardware cost ¥6,000/month for an 8×4090 server (this model fits twice on one card — 2×9.1 GB weights — and sustains **~20 QPS per card with dual replicas**) → $105/card/month ÷ (20 QPS × 70% utilization) ≈ **$0.0029 per 1,000 decisions → K 86.2** — an order of magnitude below every ranked system.
 
 <img src="eval/figs/fig6_board_style.png" width="660" alt="JevBench board with metask-jev-4b">
 
-Would rank **#1** — ahead of Jev 1.13.0 itself — under this estimate, and occupies the top-right corner of the Intelligence×Speed plane outright (no ranked system, open or closed, beats I 88.5 / S 94.1 on both axes):
+Would rank **#1** — ahead of Jev 1.13.0 itself — under this estimate, and occupies the top-right corner of the Intelligence×Speed plane outright (no ranked system, open or closed, beats I 88.5 / S 91.2 on both axes):
 
 <img src="eval/figs/fig7_scatter.png" width="660" alt="Intelligence vs Speed scatter">
 
@@ -147,11 +147,11 @@ Per-kind temperatures: **choice 1.9 / noul 2.375 / score 2.3**. Answer tokens A�
 |---|---:|---:|---:|
 | 13 human-labeled subsets (3,880 items), macro | **78.9%** | 74.8% | 76.0% |
 | JevBench v1.2 public 231 @4096 ctx | **80.1%** | 63.5% | 75.3 |
-| JevBench Score (official-methodology estimate) | **80.7** (would rank #1) | 61.8 | 75.4 |
+| JevBench Score (official-methodology estimate) | **86.4** (would rank #1) | 61.8 | 75.4 |
 | MASSIVE 14-locale dev held-out macro | **85.9%** | — | — |
 | ECE after per-kind temperature | **0.040** | — | — |
-| p50 latency (single question) | **~24 ms** | ~190 ms | 236–276 ms |
-| serving cost (owned hardware, conservative) | **$0.016/1k** | $0.166 | $0.040 |
+| p50 latency (JevBench 231, 4090) | **62.8 ms** | ~190 ms | 236–276 ms |
+| serving cost (owned 8×4090, dual-replica 20 QPS) | **$0.0029/1k** | $0.166 | $0.040 |
 
 **12 of 13 subsets exceed Bespoke Nimble-9B** — a model 2.2× its size — same prompt format, same scoring protocol.
 
