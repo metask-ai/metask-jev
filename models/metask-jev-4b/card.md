@@ -39,11 +39,11 @@ A calibrated **typed-decision model** in **16 languages**: give it a state (text
 
 ## On the JevBench board
 
-Self-measured axes inserted into the published v1.2.7 ranking (26 official entrants + this model). Official run pending — axes here use our 231-decision protocol for Intelligence, val-fit temperature for Calibration, self-hosted 4090 for Speed/Cost.
+Self-measured axes inserted into the published v1.2.7 ranking (26 official entrants + this model). Official run pending — axes use our 231-decision protocol for Intelligence, val-fit temperature for Calibration, and Speed/Cost extrapolated from officially-measured same-size self-hosted systems (SemIf, same Qwen3.5-4B-on-rented-GPU shape: adjusted latency 0.198 s vs their 0.20 s → S 83.7; same size-class tariff → K 59.5).
 
 <img src="eval/figs/fig6_board_style.png" width="660" alt="JevBench board with metask-jev-4b">
 
-Would rank **#5** — ahead of GPT-5.6 Luna and DeepSeek V4.1 Flash, behind djev — with the top-right quadrant of the Intelligence×Speed plane to itself among open weights:
+Would rank **#1** — ahead of Jev 1.13.0 itself — under this estimate, with the top-right quadrant of the Intelligence×Speed plane to itself among open weights:
 
 <img src="eval/figs/fig7_scatter.png" width="660" alt="Intelligence vs Speed scatter">
 
