@@ -11,7 +11,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from jev_scorer import load_model, score  # noqa: E402
 
-TEMPERATURE = {"choice": 1.7875, "noul": 2.25, "score": 2.05}
+TEMPERATURE = {"choice": 1.9, "noul": 2.375, "score": 2.3}
 
 
 def build_schema(q):

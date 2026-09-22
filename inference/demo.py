@@ -4,7 +4,7 @@ from jev_scorer import load_model, score
 
 DEFAULTS = {
     # per-kind temperature (see models/<name>/temperature.json)
-    "choice": 1.7875, "noul": 2.25, "score": 2.05,
+    "choice": 1.9, "noul": 2.375, "score": 2.3,
 }
 
 state = ("The store accepts returns within 30 days of purchase. "

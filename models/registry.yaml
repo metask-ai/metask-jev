@@ -9,19 +9,20 @@
   params: 4.54B
   lora: {r: 16, alpha: 32}
   results:
-    subsets_13_macro: 0.796
+    subsets_13_macro: 0.789
     jevbench_231: 0.801   # @4096 ctx, 422-as-wrong
+    massive_multi_dev_macro: 0.859   # 14 locale × 100, dev split held-out
     ece_after_temp: 0.0283
   inference:
     prompt_limit: 4096
-    temperature: {choice: 1.7875, noul: 2.25, score: 2.05}
+    temperature: {choice: 1.9, noul: 2.375, score: 2.3}   # p4b-multilingual refit 2026-09-22
   artifacts:
     local: ~/prj/metask-jev-lab-work/metask-jev-4b/merged        # 待 rsync 落地
-    kunshan: ~/nimble-small/runs/train/p4b-policy-mix/merged
+    kunshan: ~/nimble-small/runs/train/p4b-multilingual/merged
   remote:
     hf: wayfind/metask-jev-4b-policy-mix
     modelscope: null   # 待发布
-  status: ready-to-release
+  status: releasing-multilingual
 
 - name: metask-jev-0.8b
   base: Qwen/Qwen3.5-0.8B

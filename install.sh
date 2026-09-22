@@ -102,7 +102,7 @@ schema = {"decision": {
     "type": "boolean", "choices": [False, True],
     "choice_descriptions": {"false": "Not eligible.", "true": "Eligible."},
 }}
-r = score(model, tok, state, schema, temperature=2.25)  # noul temperature
+r = score(model, tok, state, schema, temperature=2.375)  # noul temperature
 print(f"[ok] self-test prediction: {r['prediction']}  probs: "
       + ", ".join(f"{k}={v:.3f}" for k, v in sorted(r['probabilities'].items(), key=lambda x: -x[1])))
 EOF
@@ -120,8 +120,8 @@ state = "Your state text here."
 schema = {"decision": {"description": "Your question?",
     "type": "boolean", "choices": [False, True],
     "choice_descriptions": {"false": "No.", "true": "Yes."}}}
-print(score(model, tok, state, schema, temperature=2.25))
+print(score(model, tok, state, schema, temperature=2.375))
 PY
 
-  Temperatures: choice 1.7875 / noul 2.25 / score 2.05 (see model card).
+  Temperatures: choice 1.9 / noul 2.375 / score 2.3 (see model card).
 TIP

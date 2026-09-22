@@ -19,7 +19,7 @@ from flask import Flask, jsonify, request
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from jev_scorer import load_model, score  # noqa: E402
 
-TEMPERATURE = {"choice": 1.7875, "noul": 2.25, "score": 2.05}
+TEMPERATURE = {"choice": 1.9, "noul": 2.375, "score": 2.3}
 
 app = Flask(__name__)
 _state = {}
