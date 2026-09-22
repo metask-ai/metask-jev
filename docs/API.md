@@ -29,33 +29,84 @@ Content-Type: application/json
 }
 ```
 
-### 三种题型
+### 三种题型（每种 3 个实测例）
 
-**boolean**（二选一，true/false 概率）
+**boolean**（二选一，true/false 概率）——适用：是/否判定、资格检查、事实核验
 
-```json
+```jsonc
+// 例1: 退货资格
 {"state": "商品7天内无理由退货，已拆封但未使用。",
  "questions": {"eligible": {"type": "boolean",
                             "description": "是否仍可无理由退货？"}}}
+// -> true 0.891
+
+// 例2: 技术归因（false 0.770：网络正常+他人复现正常+驱动已更新 → 不像本地硬件）
+{"state": "工单：视频会议共享屏幕卡顿，测速下行200Mbps正常，重启路由器和更新驱动后依旧，其他同事同一网络下正常。",
+ "questions": {"is_hardware": {"type": "boolean",
+                               "description": "问题是否出在用户本地硬件？"}}}
+
+// 例3: 完整度核验（false 0.955：缺背景与意义陈述）
+{"state": "论文摘要仅描述了方法与结果，未包含研究背景与意义，未说明与已有工作的区别。",
+ "questions": {"ready": {"type": "boolean",
+                         "description": "这篇摘要是否已达到可投稿的完整度？"}}}
 ```
 
-**enum / choice**（N 选一，criteria 的 key 就是选项值，1–26 个）
+**enum / choice**（N 选一，criteria 的 key 就是选项值，1–26 个）——适用：路由、分类、意图识别
 
-```json
+```jsonc
+// 例1: 助手领域路由（alarm 0.986）
 {"state": "明天早上九点叫我起床",
  "questions": {"domain": {"type": "enum",
                           "description": "该由哪个助手领域处理？",
                           "criteria": {"alarm": "闹钟", "weather": "天气", "cooking": "菜谱"}}}}
+
+// 例2: 客服工单分类（billing_dispute 0.929：未出国却收漫游费 = 计费争议）
+{"state": "客户来电：上月账单有一笔29元国际漫游费，但我整月没出国，手机一直飞行模式只用WiFi。",
+ "questions": {"category": {"type": "enum",
+                            "description": "该工单应归入哪个处理类别？",
+                            "criteria": {"billing_dispute": "计费争议",
+                                         "technical": "技术故障",
+                                         "account": "账户管理",
+                                         "inquiry": "业务咨询"}}}}
+
+// 例3: 意图识别（search 0.964：找已存在的邮件 = 检索）
+{"state": "帮我找上周三发给法务部的数据合规审计邮件附件，附件名里有GDPR字样。",
+ "questions": {"intent": {"type": "enum",
+                          "description": "这句话属于哪种意图？",
+                          "criteria": {"search": "检索已有内容", "create": "创建新内容",
+                                       "schedule": "日程安排", "social": "社交沟通"}}}}
 ```
 
-**score**（评分档位，criteria 用数组按序给档位说明，档位标签为 "0".."N-1"）
+**score**（评分档位，criteria 用数组按序给档位说明，档位标签为 "0".."N-1"）——适用：质量打分、风险分级、优先级
 
-```json
-{"state": "这篇总结覆盖了三个论点，第二处数据引用有误。",
+```jsonc
+// 例1: 摘要事实准确性（"2 个别错误" 0.440 / "3 基本准确" 0.417，边界双峰合理）
+{"state": "这篇总结覆盖了三个论点，第二处数据引用有误（原文23%写成32%）。",
  "questions": {"accuracy": {"type": "score",
                             "description": "事实准确性打分（0-4）",
                             "criteria": ["严重失实", "多处错误", "个别错误", "基本准确", "完全准确"]}}}
+
+// 例2: 代码评审严重度（"3 重要" 0.487：IndexError 是明确缺陷但不阻塞全部功能）
+{"state": "代码评审：函数未处理空列表输入会抛 IndexError；变量命名 data2 含义不清；其余正确，测试覆盖充分。",
+ "questions": {"severity": {"type": "score",
+                            "description": "评审问题严重程度（0轻微-4阻塞）",
+                            "criteria": ["0 轻微：风格偏好", "1 建议：不影响正确性",
+                                         "2 一般：应修复不阻塞", "3 重要：合并前必须处理",
+                                         "4 阻塞：明确缺陷禁止合并"]}}}
+
+// 例3: 客诉升级风险（"4 很高" 0.667：用户明示将向监管部门投诉）
+{"state": "客服对话：用户称已反映三次未解决，要求本次给出明确答复时间，否则向监管部门投诉。",
+ "questions": {"escalation_risk": {"type": "score",
+                                   "description": "该用户升级投诉的风险（0低-4高）",
+                                   "criteria": ["0 很低", "1 较低", "2 中等", "3 较高", "4 很高"]}}}
 ```
+
+> 多语言直接可用——state 换语言即可，题目定义保持任意一种语言：
+> 英文 state + 英文题 → `is_approved=false 0.863`（邮件只说"请确认"，未说已批准）；
+> 日文 state + 日文题 → `schedule 0.954`（"入れたい" = 日程调整）。
+
+> 概率读法：score 题的分布可能双峰（边界档位各占权重），取 argmax 为档位、
+> 相邻档位概率之和为"大致该档"的置信度。
 
 ### 响应
 
