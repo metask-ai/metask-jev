@@ -129,20 +129,21 @@ def _score_async(state, schema, temperature):
 def build_schema(q):
     qtype = q["type"]
     crit = q.get("criteria") or {}
-    if qtype == "noul":
+    instr = q.get("instructions") or q.get("description") or "Decide."
+    if qtype in ("noul", "boolean"):
         return {"decision": {
-            "description": q["instructions"], "type": "boolean",
+            "description": instr, "type": "boolean",
             "choices": [False, True],
             "choice_descriptions": {"false": crit.get("false", "No"),
                                     "true": crit.get("true", "Yes")}}}, TEMPERATURE["noul"]
     if qtype == "score":
         labels = [str(i) for i in range(len(crit))]
         return {"decision": {
-            "description": q["instructions"], "type": "enum", "choices": labels,
+            "description": instr, "type": "enum", "choices": labels,
             "choice_descriptions": dict(zip(labels, crit))}}, TEMPERATURE["score"]
     labels = list(crit.keys()) if isinstance(crit, dict) else list(crit)
     return {"decision": {
-        "description": q["instructions"], "type": "enum", "choices": labels,
+        "description": instr, "type": "enum", "choices": labels,
         "choice_descriptions": {k: (crit.get(k) or k) for k in labels}}}, TEMPERATURE["choice"]
 
 
